@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FizzWare.NBuilder;
 using Moq;
 using NUnit.Framework;
@@ -167,6 +166,40 @@ namespace NzbDrone.Core.Test.TvTests.SeriesAddedServiceTests
             VerifyNotMonitored(e => e.AirDateUtc.HasValue && e.AirDateUtc.Value.Before(DateTime.UtcNow));
         }
 
+        [Test]
+        public void should_not_monitor_season_when_all_episodes_are_monitored_except_latest_season()
+        {
+            _series.Seasons = Builder<Season>.CreateListOfSize(2)
+                                             .All()
+                                             .With(n => n.Monitored = true)
+                                             .Build()
+                                             .ToList();
+
+            _episodes = Builder<Episode>.CreateListOfSize(5)
+                                        .All()
+                                        .With(e => e.SeasonNumber = 1)
+                                        .With(e => e.EpisodeFileId = 0)
+                                        .With(e => e.AirDateUtc = DateTime.UtcNow.AddDays(-5))
+                                        .TheLast(1)
+                                        .With(e => e.SeasonNumber = 2)
+                                        .Build()
+                                        .ToList();
+            
+            Mocker.GetMock<IEpisodeService>()
+                  .Setup(s => s.GetEpisodeBySeries(It.IsAny<int>()))
+                  .Returns(_episodes);
+
+            WithSeriesAddedEvent(new AddSeriesOptions
+            {
+                IgnoreEpisodesWithoutFiles = true
+            });
+            
+            WithSeriesScannedEvent();
+
+            VerifySeasonMonitored(n => n.SeasonNumber == 2);
+            VerifySeasonNotMonitored(n => n.SeasonNumber == 1);
+        }
+
         private void VerifyMonitored(Func<Episode, bool> predicate)
         {
             Mocker.GetMock<IEpisodeService>()
@@ -177,6 +210,18 @@ namespace NzbDrone.Core.Test.TvTests.SeriesAddedServiceTests
         {
             Mocker.GetMock<IEpisodeService>()
                 .Verify(v => v.UpdateEpisodes(It.Is<List<Episode>>(l => l.Where(predicate).All(e => !e.Monitored))));
+        }
+
+        private void VerifySeasonMonitored(Func<Season, bool> predicate)
+        {
+            Mocker.GetMock<ISeriesService>()
+                  .Verify(v => v.UpdateSeries(It.Is<Series>(s => s.Seasons.Where(predicate).All(n => n.Monitored))));
+        }
+
+        private void VerifySeasonNotMonitored(Func<Season, bool> predicate)
+        {
+            Mocker.GetMock<ISeriesService>()
+                  .Verify(v => v.UpdateSeries(It.Is<Series>(s => s.Seasons.Where(predicate).All(n => !n.Monitored))));
         }
     }
 }

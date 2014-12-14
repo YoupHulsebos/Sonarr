@@ -60,7 +60,14 @@ namespace NzbDrone.Core.Tv
 
             foreach (var season in series.Seasons)
             {
-                if (episodes.Where(e => e.SeasonNumber == season.SeasonNumber).All(e => !e.Monitored) || options.IgnoreSeasons.Contains(season.SeasonNumber))
+                if (options.IgnoreSeasons.Contains(season.SeasonNumber))
+                {
+                    season.Monitored = false;
+                }
+
+                if (series.Seasons.Select(s => s.SeasonNumber).MaxOrDefault() != season.SeasonNumber &&
+                    episodes.Where(e => e.SeasonNumber == season.SeasonNumber).All(e => !e.Monitored))
+                    
                 {
                     season.Monitored = false;
                 }
