@@ -14,13 +14,5 @@ namespace NzbDrone.Core.Tv
             IgnoreSeasons = new List<int>();
         }
     }
-
-    public enum MonitorEpisodeType
-    {
-        All = 0,
-        Missing = 1,
-        Future = 2,
-        FirstSeason = 3
-    }
 }
 
