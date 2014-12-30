@@ -21,5 +21,7 @@ namespace NzbDrone.Api.Config
         public Boolean SkipFreeSpaceCheckWhenImporting { get; set; }
         public Boolean CopyUsingHardlinks { get; set; }
         public Boolean EnableMediaInfo { get; set; }
+
+        public String AdditionalMetadataFiles { get; set; }
     }
 }

@@ -282,6 +282,13 @@ namespace NzbDrone.Core.Configuration
             set { SetValue("ShowRelativeDates", value); }
         }
 
+        public String AdditionalMetadataFiles
+        {
+            get { return GetValue("AdditionalMetadataFiles", "srt, sub, idx"); }
+
+            set { SetValue("AdditionalMetadataFiles", value); }
+        }
+
         private string GetValue(string key)
         {
             return GetValue(key, String.Empty);
