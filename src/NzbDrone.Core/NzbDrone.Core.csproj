@@ -180,6 +180,7 @@
     <Compile Include="Datastore\Migration\017_reset_scene_names.cs" />
     <Compile Include="Datastore\Migration\018_remove_duplicates.cs" />
     <Compile Include="Datastore\Migration\019_restore_unique_constraints.cs" />
+    <Compile Include="Datastore\Migration\073_add_downloadsubtitle_to_series.cs" />
     <Compile Include="Datastore\Migration\020_add_year_and_seasons_to_series.cs" />
     <Compile Include="Datastore\Migration\021_drop_seasons_table.cs" />
     <Compile Include="Datastore\Migration\022_move_indexer_to_generic_provider.cs" />

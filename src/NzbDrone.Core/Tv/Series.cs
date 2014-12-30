@@ -27,6 +27,7 @@ namespace NzbDrone.Core.Tv
         public string Overview { get; set; }
         public string AirTime { get; set; }
         public bool Monitored { get; set; }
+        public bool SubtitleMonitored { get; set; }
         public int ProfileId { get; set; }
         public bool SeasonFolder { get; set; }
         public DateTime? LastInfoSync { get; set; }
